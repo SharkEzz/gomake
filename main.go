@@ -10,6 +10,8 @@ import (
 )
 
 func main() {
+	dry := flag.Bool("dry", false, "Set to true to disable the execution of the commands")
+
 	flag.Parse()
 
 	job := flag.Arg(0)
@@ -24,7 +26,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	rn, err := runner.NewRunner(parser)
+	rn, err := runner.NewRunner(parser, *dry)
 	if err != nil {
 		log.Fatalln(err)
 	}

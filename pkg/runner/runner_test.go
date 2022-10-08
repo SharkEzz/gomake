@@ -45,7 +45,7 @@ func TestRunnerWithOneJob(t *testing.T) {
 		t.Error("Error while parsing content:", err)
 	}
 
-	rn, err := NewRunner(file)
+	rn, err := NewRunner(file, true)
 	if err != nil {
 		t.Error("Error while creating runner:", err)
 	}
@@ -66,7 +66,7 @@ func TestRunnerWithDependencies(t *testing.T) {
 		t.Error("Error while parsing content:", err)
 	}
 
-	rn, err := NewRunner(file)
+	rn, err := NewRunner(file, true)
 	if err != nil {
 		t.Error("Error while creating runner:", err)
 	}
@@ -87,7 +87,7 @@ func TestRunnerWithCircularDependency(t *testing.T) {
 		t.Error("Error while parsing content:", err)
 	}
 
-	rn, err := NewRunner(file)
+	rn, err := NewRunner(file, true)
 	if err != nil {
 		t.Error("Error while creating runner:", err)
 	}
@@ -107,7 +107,7 @@ func TestRunnerWithNonExistingJob(t *testing.T) {
 		t.Error("Error while parsing content:", err)
 	}
 
-	rn, err := NewRunner(file)
+	rn, err := NewRunner(file, true)
 	if err != nil {
 		t.Error("Error while creating runner:", err)
 	}
@@ -126,7 +126,7 @@ func TestRunnerWithNonExistingDependency(t *testing.T) {
 		t.Error("Error while parsing content:", err)
 	}
 
-	rn, err := NewRunner(file)
+	rn, err := NewRunner(file, true)
 	if err != nil {
 		t.Error("Error while creating runner:", err)
 	}
@@ -145,7 +145,7 @@ func TestRunnerWithAllJobs(t *testing.T) {
 		t.Error("Error while parsing content:", err)
 	}
 
-	rn, err := NewRunner(file)
+	rn, err := NewRunner(file, true)
 	if err != nil {
 		t.Error("Error while creating runner:", err)
 	}
@@ -161,7 +161,7 @@ func BenchmarkComputeExecutionOrder(b *testing.B) {
 		b.Error("Error while parsing content:", err)
 	}
 
-	rn, err := NewRunner(file)
+	rn, err := NewRunner(file, true)
 	if err != nil {
 		b.Error("Error while creating runner:", err)
 	}

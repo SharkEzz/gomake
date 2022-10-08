@@ -12,19 +12,28 @@ import (
 	"github.com/SharkEzz/gomake/pkg/parser"
 )
 
-type Runner struct {
-	file *parser.GoMakefile
+type Config struct {
+	Dry bool
 }
 
-func NewRunner(file *parser.GoMakefile) (*Runner, error) {
+type Runner struct {
+	file   *parser.GoMakefile
+	config *Config
+}
+
+func NewRunner(file *parser.GoMakefile, dry bool) (*Runner, error) {
 	if file == nil {
 		return nil, errors.New("file is nil")
+	}
+
+	config := &Config{
+		Dry: dry,
 	}
 
 	env.LoadEnvVariablesFromFiles(file.Dotenv...)
 	env.LoadEnvVariablesFromMap(file.Env)
 
-	return &Runner{file}, nil
+	return &Runner{file, config}, nil
 }
 
 func (r *Runner) ExecuteJobByName(jobName string) (int, error) {
@@ -59,11 +68,20 @@ func (r *Runner) executeJob(jobName string, job *parser.Job) error {
 		return nil
 	}
 
-	log.Printf("executing job '%s'", jobName)
+	if r.config.Dry {
+		log.Printf("executing job '%s' in dry mode", jobName)
+	} else {
+		log.Printf("executing job '%s'", jobName)
+	}
 
 	for _, run := range job.Run {
 		// TODO: check env for shell to use
 		cmd := exec.Command("sh", "-c", os.ExpandEnv(run))
+
+		if r.config.Dry {
+			log.Println(cmd.String())
+			continue
+		}
 
 		output, err := cmd.Output()
 		if err != nil {
