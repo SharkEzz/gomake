@@ -58,7 +58,7 @@ func (r *Runner) executeJob(jobName string, job *parser.Job) error {
 	log.Printf("executing job '%s'", jobName)
 
 	// TODO: check env for shell to use
-	cmd := exec.Command("sh", "-c", strings.TrimSpace(job.Run))
+	cmd := exec.Command("sh", "-c", os.ExpandEnv(strings.TrimSpace(job.Run)))
 
 	output, err := cmd.Output()
 	if err != nil {
