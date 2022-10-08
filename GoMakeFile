@@ -2,16 +2,16 @@ version: '1'
 
 jobs:
   build:
-    run: go build -trimpath .
-    check: gomake
+    run: go build -trimpath -o gomake .
 
   install:
     deps:
       - build
     run: sudo mv gomake /usr/local/bin
-    check: /usr/local/bin/gomake
+    skipIf: /usr/local/bin/gomake
 
   uninstall:
     deps:
       - install
     run: sudo rm /usr/local/bin/gomake
+    skipIfNot: /usr/local/bin/gomake

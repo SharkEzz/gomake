@@ -52,10 +52,6 @@ func TestParser(t *testing.T) {
 		t.Error("expected 'test_dep' job to not be silent")
 	}
 
-	if job1.Check != "/bin/sh" {
-		t.Error("expected check to be '/bin/sh':", job1.Check)
-	}
-
 	job2, ok := gmfile.Jobs["test_dep"]
 	if !ok {
 		t.Error("Job test_dep not found")
@@ -67,9 +63,5 @@ func TestParser(t *testing.T) {
 
 	if !job2.Silent {
 		t.Error("expected 'test_dep' job to be silent")
-	}
-
-	if job2.Check != "" {
-		t.Error("expected check to be empty:", job2.Check)
 	}
 }

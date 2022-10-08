@@ -50,17 +50,12 @@ func (r *Runner) ExecuteJobByName(jobName string) (int, error) {
 }
 
 func (r *Runner) executeJob(jobName string, job *parser.Job) error {
-	log.Printf("executing job '%s'", jobName)
-
-	if job.Check != "" {
-		if _, err := os.Stat(job.Check); !os.IsNotExist(err) {
-			// Skip the current job as the checked file / directory already exist
-			if !job.Silent {
-				log.Printf("skipping job '%s' as the required file or directory already exist\n", jobName)
-			}
-			return nil
-		}
+	if checkSkip(jobName, job) {
+		// Skip current job
+		return nil
 	}
+
+	log.Printf("executing job '%s'", jobName)
 
 	// TODO: check env for shell to use
 	cmd := exec.Command("sh", "-c", strings.TrimSpace(job.Run))
@@ -83,6 +78,30 @@ func (r *Runner) executeJob(jobName string, job *parser.Job) error {
 	}
 
 	return nil
+}
+
+func checkSkip(jobName string, job *parser.Job) bool {
+	if job.SkipIf != "" {
+		if _, err := os.Stat(job.SkipIf); !os.IsNotExist(err) {
+			// Skip the current job as the checked file / directory already exist
+			if !job.Silent {
+				log.Printf("skipping job '%s'\n", jobName)
+			}
+			return true
+		}
+	}
+
+	if job.SkipIfNot != "" {
+		if _, err := os.Stat(job.SkipIfNot); os.IsNotExist(err) {
+			// Skip the current job as the checked file / directory doesn't exist
+			if !job.Silent {
+				log.Printf("skipping job '%s'\n", jobName)
+			}
+			return true
+		}
+	}
+
+	return false
 }
 
 func (r *Runner) ExecuteAllJobs() error {
