@@ -2,16 +2,18 @@ version: '1'
 
 jobs:
   create_file:
-    run: |
-      echo test > test.txt
+    run:
+      - echo test > test.txt
     silent: true
 
   cat_file:
     deps:
       - create_test
-    run: cat ./test.txt
+    run:
+      - cat ./test.txt
 
   del_file:
     deps:
       - cat_test
-    run: rm test.txt
+    run:
+      - rm test.txt

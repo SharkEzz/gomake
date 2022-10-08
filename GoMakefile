@@ -1,17 +1,27 @@
 version: '1'
 
+env:
+  TEST_ENV: test
+
+dotenv:
+  - .env
+  - .env.local
+
 jobs:
   build:
-    run: go build -trimpath -o gomake .
+    run:
+      - go build -trimpath -o gomake .
 
   install:
     deps:
       - build
-    run: sudo mv gomake /usr/local/bin
+    run:
+      - sudo mv gomake /usr/local/bin
     skipIf: /usr/local/bin/gomake
 
   uninstall:
     deps:
       - install
-    run: sudo rm /usr/local/bin/gomake
+    run:
+      - sudo rm /usr/local/bin/gomake
     skipIfNot: /usr/local/bin/gomake

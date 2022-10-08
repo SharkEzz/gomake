@@ -11,8 +11,8 @@ const fakeFileContent = `version: '1'
 
 jobs:
   gomake:
-    run: |
-      go build .
+    run:
+      - go build .
     check: /bin/sh
   
   test_dep:
@@ -40,7 +40,7 @@ func TestParser(t *testing.T) {
 		t.Error("Job gomake not found")
 	}
 
-	if strings.TrimSpace(job1.Run) != "go build ." {
+	if strings.TrimSpace(job1.Run[0]) != "go build ." {
 		t.Error("Job gomake run is not 'go build .'")
 	}
 

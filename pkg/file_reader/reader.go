@@ -1,4 +1,4 @@
-package loader
+package filereader
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func LoadGoMakefileContent() ([]byte, error) {
+func FindAndReadGoMakefile() ([]byte, error) {
 	entries, err := os.ReadDir(".")
 	if err != nil {
 		return nil, err

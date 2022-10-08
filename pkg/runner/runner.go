@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/SharkEzz/gomake/pkg/env"
 	"github.com/SharkEzz/gomake/pkg/parser"
 )
 
@@ -15,12 +16,15 @@ type Runner struct {
 	file *parser.GoMakefile
 }
 
-func NewRunner(gmFile *parser.GoMakefile) (*Runner, error) {
-	if gmFile == nil {
-		return nil, errors.New("gmFile is nil")
+func NewRunner(file *parser.GoMakefile) (*Runner, error) {
+	if file == nil {
+		return nil, errors.New("file is nil")
 	}
 
-	return &Runner{gmFile}, nil
+	env.LoadEnvVariablesFromFiles(file.Dotenv...)
+	env.LoadEnvVariablesFromMap(file.Env)
+
+	return &Runner{file}, nil
 }
 
 func (r *Runner) ExecuteJobByName(jobName string) (int, error) {
@@ -31,7 +35,7 @@ func (r *Runner) ExecuteJobByName(jobName string) (int, error) {
 
 	deps := []string{jobName}
 
-	err := r.computeExecutionOrder(jobName, &job, &deps)
+	err := r.resolveJobDependencies(jobName, &job, &deps)
 	if err != nil {
 		return 0, err
 	}
@@ -57,23 +61,25 @@ func (r *Runner) executeJob(jobName string, job *parser.Job) error {
 
 	log.Printf("executing job '%s'", jobName)
 
-	// TODO: check env for shell to use
-	cmd := exec.Command("sh", "-c", os.ExpandEnv(strings.TrimSpace(job.Run)))
+	for _, run := range job.Run {
+		// TODO: check env for shell to use
+		cmd := exec.Command("sh", "-c", os.ExpandEnv(run))
 
-	output, err := cmd.Output()
-	if err != nil {
-		return err
-	}
+		output, err := cmd.Output()
+		if err != nil {
+			return err
+		}
 
-	if job.Silent {
-		return nil
-	}
+		if job.Silent {
+			return nil
+		}
 
-	outputStr := strings.TrimSpace(string(output))
-	if outputStr != "" {
-		lines := strings.Split(outputStr, "\n")
-		for _, line := range lines {
-			log.Printf("output for job '%s': %s", jobName, line)
+		outputStr := strings.TrimSpace(string(output))
+		if outputStr != "" {
+			lines := strings.Split(outputStr, "\n")
+			for _, line := range lines {
+				log.Printf("output for job '%s': %s", jobName, line)
+			}
 		}
 	}
 
@@ -115,7 +121,7 @@ func (r *Runner) ExecuteAllJobs() error {
 	return nil
 }
 
-func (r *Runner) computeExecutionOrder(startJobName string, startJob *parser.Job, deps *[]string) error {
+func (r *Runner) resolveJobDependencies(startJobName string, startJob *parser.Job, deps *[]string) error {
 OUTER:
 	for _, depName := range startJob.Deps {
 		loopDep, ok := r.file.Jobs[depName]
@@ -133,7 +139,7 @@ OUTER:
 
 		*deps = append(*deps, depName)
 
-		if err := r.computeExecutionOrder(depName, &loopDep, deps); err != nil {
+		if err := r.resolveJobDependencies(depName, &loopDep, deps); err != nil {
 			return err
 		}
 	}

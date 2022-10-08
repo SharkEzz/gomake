@@ -10,30 +10,33 @@ const fakeFileContent = `version: '1'
 
 jobs:
   create_test:
-    run: |
-      echo test > test.txt
+    run:
+      - echo test > test.txt
 
   cat_test:
     deps:
       - create_test
-    run: cat test.txt
+    run:
+      - cat test.txt
 
   test_circular_dep:
     deps:
       - test_circular_dep
-    run: |
-        echo test > test.txt
-        cat test.txt
+    run:
+      - echo test > test.txt
+      - cat test.txt
 
   test_wrong_dep:
     deps:
       - nonexisting_dep
-    run: cat test.txt
+    run:
+      - cat test.txt
 
   del_test:
     deps:
       - cat_test
-    run: rm test.txt
+    run:
+      - rm test.txt
 `
 
 func TestRunnerWithOneJob(t *testing.T) {
@@ -169,7 +172,7 @@ func BenchmarkComputeExecutionOrder(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		err := rn.computeExecutionOrder("del_test", &job, &deps)
+		err := rn.resolveJobDependencies("del_test", &job, &deps)
 		if err != nil {
 			b.Error(err)
 		}
