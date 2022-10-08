@@ -21,7 +21,9 @@ jobs:
   test_circular_dep:
     deps:
       - test_circular_dep
-    run: cat test.txt
+    run: |
+        echo test > test.txt
+        cat test.txt
 
   test_wrong_dep:
     deps:
@@ -87,12 +89,12 @@ func TestRunnerWithCircularDependency(t *testing.T) {
 		t.Error("Error while creating runner:", err)
 	}
 	count, err := rn.ExecuteJobByName("test_circular_dep")
-	if count != 0 {
-		t.Error("expected executed job count to be 0:", count)
+	if count != 1 {
+		t.Error("expected executed job count to be 1:", count)
 	}
 
-	if err == nil || err.Error() != "circular reference for job 'test_circular_dep'" {
-		t.Error("expected circular reference error for job 'test_circular_dep'", err)
+	if err != nil {
+		t.Error("expected circular reference to be dropped: ", err)
 	}
 }
 

@@ -116,6 +116,7 @@ func (r *Runner) ExecuteAllJobs() error {
 }
 
 func (r *Runner) computeExecutionOrder(startJobName string, startJob *parser.Job, deps *[]string) error {
+OUTER:
 	for _, depName := range startJob.Deps {
 		loopDep, ok := r.file.Jobs[depName]
 		if !ok {
@@ -124,7 +125,9 @@ func (r *Runner) computeExecutionOrder(startJobName string, startJob *parser.Job
 
 		for _, dep := range *deps {
 			if depName == dep {
-				return fmt.Errorf("circular reference for job '%s'", dep)
+				log.Printf("dropped circular reference for job '%s'", dep)
+
+				continue OUTER
 			}
 		}
 
