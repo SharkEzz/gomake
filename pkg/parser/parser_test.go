@@ -17,6 +17,7 @@ jobs:
   test_dep:
     deps:
       - gomake
+    silent: true
 `
 
 func TestParser(t *testing.T) {
@@ -46,6 +47,10 @@ func TestParser(t *testing.T) {
 		t.Error("Job gomake deps length is not 0")
 	}
 
+	if job1.Silent {
+		t.Error("expected 'test_dep' job to not be silent")
+	}
+
 	job2, ok := gmfile.Jobs["test_dep"]
 	if !ok {
 		t.Error("Job test_dep not found")
@@ -53,5 +58,9 @@ func TestParser(t *testing.T) {
 
 	if len(job2.Deps) != 1 {
 		t.Error("Job test_dep deps length is not 1")
+	}
+
+	if !job2.Silent {
+		t.Error("expected 'test_dep' job to be silent")
 	}
 }
