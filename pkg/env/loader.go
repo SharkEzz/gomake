@@ -6,10 +6,12 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func LoadEnvVariablesFromMap(variables map[string]string) {
+func LoadEnvVariablesFromMap(variables map[string]string) error {
 	for key, value := range variables {
-		os.Setenv(key, value)
+		return os.Setenv(key, value)
 	}
+
+	return nil
 }
 
 func LoadEnvVariablesFromFiles(files ...string) error {

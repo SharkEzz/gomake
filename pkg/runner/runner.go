@@ -30,8 +30,13 @@ func NewRunner(file *parser.GoMakefile, dry bool) (*Runner, error) {
 		Dry: dry,
 	}
 
-	env.LoadEnvVariablesFromFiles(file.Dotenv...)
-	env.LoadEnvVariablesFromMap(file.Env)
+	if err := env.LoadEnvVariablesFromFiles(file.Dotenv...); err != nil {
+		return nil, err
+
+	}
+	if err := env.LoadEnvVariablesFromMap(file.Env); err != nil {
+		return nil, err
+	}
 
 	return &Runner{file, config}, nil
 }
