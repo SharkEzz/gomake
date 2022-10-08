@@ -167,6 +167,9 @@ func BenchmarkComputeExecutionOrder(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		rn.computeExecutionOrder("del_test", &job, &deps)
+		err := rn.computeExecutionOrder("del_test", &job, &deps)
+		if err != nil {
+			b.Error(err)
+		}
 	}
 }
