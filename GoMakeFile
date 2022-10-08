@@ -1,0 +1,15 @@
+version: '1'
+
+jobs:
+  build:
+    run: go build -trimpath .
+
+  install:
+    deps:
+      - build
+    run: sudo mv gomake /usr/local/bin
+
+  uninstall:
+    deps:
+      - install
+    run: sudo rm /usr/local/bin/gomake

@@ -1,0 +1,12 @@
+version: '1'
+
+jobs:
+  job_1:
+    run: |
+      go build .
+    silent: true
+
+  job_with_dependency:
+    deps:
+      - job_1
+    run: echo success
