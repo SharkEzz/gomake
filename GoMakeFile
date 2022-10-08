@@ -3,11 +3,13 @@ version: '1'
 jobs:
   build:
     run: go build -trimpath .
+    check: gomake
 
   install:
     deps:
       - build
     run: sudo mv gomake /usr/local/bin
+    check: /usr/local/bin/gomake
 
   uninstall:
     deps:

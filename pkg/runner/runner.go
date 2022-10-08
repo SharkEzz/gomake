@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -51,8 +52,17 @@ func (r *Runner) ExecuteJobByName(jobName string) (int, error) {
 func (r *Runner) executeJob(jobName string, job *parser.Job) error {
 	log.Printf("executing job '%s'", jobName)
 
-	// TODO: check env
+	if job.Check != "" {
+		if _, err := os.Stat(job.Check); !os.IsNotExist(err) {
+			// Skip the current job as the checked file / directory already exist
+			if !job.Silent {
+				log.Printf("skipping job '%s' as the required file or directory already exist\n", jobName)
+			}
+			return nil
+		}
+	}
 
+	// TODO: check env for shell to use
 	cmd := exec.Command("sh", "-c", strings.TrimSpace(job.Run))
 
 	output, err := cmd.Output()
