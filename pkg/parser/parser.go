@@ -1,11 +1,12 @@
 package parser
 
 import (
+	"github.com/SharkEzz/gomake/pkg/gomakefile"
 	"gopkg.in/yaml.v3"
 )
 
-func Parse(content []byte) (*GoMakefile, error) {
-	gmFile := &GoMakefile{}
+func Parse(content []byte) (*gomakefile.GoMakefile, error) {
+	gmFile := &gomakefile.GoMakefile{}
 
 	err := yaml.Unmarshal(content, gmFile)
 	if err != nil {

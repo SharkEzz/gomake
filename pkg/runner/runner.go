@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/SharkEzz/gomake/pkg/env"
-	"github.com/SharkEzz/gomake/pkg/parser"
+	"github.com/SharkEzz/gomake/pkg/gomakefile"
 )
 
 type Config struct {
@@ -17,11 +17,11 @@ type Config struct {
 }
 
 type Runner struct {
-	file   *parser.GoMakefile
+	file   *gomakefile.GoMakefile
 	config *Config
 }
 
-func NewRunner(file *parser.GoMakefile, dry bool) (*Runner, error) {
+func NewRunner(file *gomakefile.GoMakefile, dry bool) (*Runner, error) {
 	if file == nil {
 		return nil, errors.New("file is nil")
 	}
@@ -67,7 +67,7 @@ func (r *Runner) ExecuteJobByName(jobName string) (int, error) {
 	return len(deps), nil
 }
 
-func (r *Runner) executeJob(jobName string, job *parser.Job) error {
+func (r *Runner) executeJob(jobName string, job *gomakefile.Job) error {
 	if checkSkip(jobName, job) {
 		// Skip current job
 		return nil
@@ -109,7 +109,7 @@ func (r *Runner) executeJob(jobName string, job *parser.Job) error {
 	return nil
 }
 
-func checkSkip(jobName string, job *parser.Job) bool {
+func checkSkip(jobName string, job *gomakefile.Job) bool {
 	if job.SkipIf != "" {
 		if _, err := os.Stat(job.SkipIf); !os.IsNotExist(err) {
 			// Skip the current job as the checked file / directory already exist
@@ -144,7 +144,7 @@ func (r *Runner) ExecuteAllJobs() error {
 	return nil
 }
 
-func (r *Runner) resolveJobDependencies(startJobName string, startJob *parser.Job, deps *[]string) error {
+func (r *Runner) resolveJobDependencies(startJobName string, startJob *gomakefile.Job, deps *[]string) error {
 OUTER:
 	for _, depName := range startJob.Deps {
 		loopDep, ok := r.file.Jobs[depName]

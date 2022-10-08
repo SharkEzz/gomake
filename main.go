@@ -4,7 +4,7 @@ import (
 	"flag"
 	"log"
 
-	filereader "github.com/SharkEzz/gomake/pkg/file_reader"
+	"github.com/SharkEzz/gomake/pkg/gomakefile/read"
 	"github.com/SharkEzz/gomake/pkg/parser"
 	"github.com/SharkEzz/gomake/pkg/runner"
 )
@@ -16,7 +16,8 @@ func main() {
 
 	job := flag.Arg(0)
 
-	fileContent, err := filereader.FindAndReadGoMakefile()
+	fileContent, err := read.FindAndReadGoMakefile()
+
 	if err != nil {
 		log.Fatalln(err)
 	}

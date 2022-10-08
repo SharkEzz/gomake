@@ -1,4 +1,4 @@
-package filereader
+package read
 
 import (
 	"fmt"
