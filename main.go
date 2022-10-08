@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"log"
-	"os"
 
+	"github.com/SharkEzz/gomake/pkg/loader"
 	"github.com/SharkEzz/gomake/pkg/parser"
 	"github.com/SharkEzz/gomake/pkg/runner"
 )
@@ -12,17 +12,9 @@ import (
 func main() {
 	flag.Parse()
 
-	file := flag.Arg(0)
-	job := flag.Arg(1)
+	job := flag.Arg(0)
 
-	var fileContent []byte
-	var err error
-
-	if file != "" {
-		fileContent, err = os.ReadFile(file)
-	} else {
-		fileContent, err = os.ReadFile("./GoMakeFile")
-	}
+	fileContent, err := loader.LoadGoMakefileContent()
 	if err != nil {
 		log.Fatalln(err)
 	}
