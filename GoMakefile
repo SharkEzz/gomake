@@ -1,12 +1,5 @@
 version: '1'
 
-env:
-  TEST_ENV: test
-
-dotenv:
-  - .env
-  - .env.local
-
 jobs:
   build:
     run:

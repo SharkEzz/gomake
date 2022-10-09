@@ -39,13 +39,17 @@ jobs:
       - rm test.txt
 `
 
+var defaultConfig = &Config{
+	Dry: true,
+}
+
 func TestRunnerWithOneJob(t *testing.T) {
 	file, err := parser.Parse([]byte(fakeFileContent))
 	if err != nil {
 		t.Error("Error while parsing content:", err)
 	}
 
-	rn, err := NewRunner(file, true)
+	rn, err := NewRunner(file, defaultConfig)
 	if err != nil {
 		t.Error("Error while creating runner:", err)
 	}
@@ -66,7 +70,7 @@ func TestRunnerWithDependencies(t *testing.T) {
 		t.Error("Error while parsing content:", err)
 	}
 
-	rn, err := NewRunner(file, true)
+	rn, err := NewRunner(file, defaultConfig)
 	if err != nil {
 		t.Error("Error while creating runner:", err)
 	}
@@ -87,7 +91,7 @@ func TestRunnerWithCircularDependency(t *testing.T) {
 		t.Error("Error while parsing content:", err)
 	}
 
-	rn, err := NewRunner(file, true)
+	rn, err := NewRunner(file, defaultConfig)
 	if err != nil {
 		t.Error("Error while creating runner:", err)
 	}
@@ -107,7 +111,7 @@ func TestRunnerWithNonExistingJob(t *testing.T) {
 		t.Error("Error while parsing content:", err)
 	}
 
-	rn, err := NewRunner(file, true)
+	rn, err := NewRunner(file, defaultConfig)
 	if err != nil {
 		t.Error("Error while creating runner:", err)
 	}
@@ -126,7 +130,7 @@ func TestRunnerWithNonExistingDependency(t *testing.T) {
 		t.Error("Error while parsing content:", err)
 	}
 
-	rn, err := NewRunner(file, true)
+	rn, err := NewRunner(file, defaultConfig)
 	if err != nil {
 		t.Error("Error while creating runner:", err)
 	}
@@ -139,29 +143,13 @@ func TestRunnerWithNonExistingDependency(t *testing.T) {
 	}
 }
 
-func TestRunnerWithAllJobs(t *testing.T) {
-	file, err := parser.Parse([]byte(fakeFileContent))
-	if err != nil {
-		t.Error("Error while parsing content:", err)
-	}
-
-	rn, err := NewRunner(file, true)
-	if err != nil {
-		t.Error("Error while creating runner:", err)
-	}
-	err = rn.ExecuteAllJobs()
-	if err != nil {
-		t.Error("Error while executing all jobs:", err)
-	}
-}
-
 func BenchmarkComputeExecutionOrder(b *testing.B) {
 	file, err := parser.Parse([]byte(fakeFileContent))
 	if err != nil {
 		b.Error("Error while parsing content:", err)
 	}
 
-	rn, err := NewRunner(file, true)
+	rn, err := NewRunner(file, defaultConfig)
 	if err != nil {
 		b.Error("Error while creating runner:", err)
 	}

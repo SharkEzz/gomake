@@ -8,8 +8,8 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/SharkEzz/gomake/pkg/env"
 	"github.com/SharkEzz/gomake/pkg/gomakefile"
+	"github.com/SharkEzz/gomake/pkg/runner/env"
 )
 
 type Config struct {
@@ -21,13 +21,9 @@ type Runner struct {
 	config *Config
 }
 
-func NewRunner(file *gomakefile.GoMakefile, dry bool) (*Runner, error) {
+func NewRunner(file *gomakefile.GoMakefile, config *Config) (*Runner, error) {
 	if file == nil {
 		return nil, errors.New("file is nil")
-	}
-
-	config := &Config{
-		Dry: dry,
 	}
 
 	if err := env.LoadEnvVariablesFromFiles(file.Dotenv...); err != nil {
@@ -131,17 +127,6 @@ func checkSkip(jobName string, job *gomakefile.Job) bool {
 	}
 
 	return false
-}
-
-func (r *Runner) ExecuteAllJobs() error {
-	for jobName, job := range r.file.Jobs {
-		err := r.executeJob(jobName, &job)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 func (r *Runner) resolveJobDependencies(startJobName string, startJob *gomakefile.Job, deps *[]string) error {

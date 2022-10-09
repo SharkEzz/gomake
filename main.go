@@ -27,20 +27,21 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	rn, err := runner.NewRunner(parser, *dry)
+	config := &runner.Config{
+		Dry: *dry,
+	}
+
+	rn, err := runner.NewRunner(parser, config)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	if job != "" {
-		_, err := rn.ExecuteJobByName(job)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		return
+	if job == "" {
+		log.Fatalln("No job specified")
 	}
 
-	if err := rn.ExecuteAllJobs(); err != nil {
+	_, err = rn.ExecuteJobByName(job)
+	if err != nil {
 		log.Fatalln(err)
 	}
 }
