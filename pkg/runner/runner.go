@@ -3,13 +3,13 @@ package runner
 import (
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
 
 	"github.com/SharkEzz/gomake/pkg/gomakefile"
 	"github.com/SharkEzz/gomake/pkg/runner/env"
+	log "github.com/sirupsen/logrus"
 )
 
 type Config struct {
@@ -70,9 +70,9 @@ func (r *Runner) executeJob(jobName string, job *gomakefile.Job) error {
 	}
 
 	if r.config.Dry {
-		log.Printf("executing job '%s' in dry mode", jobName)
+		log.Infof("executing job '%s' in dry mode", jobName)
 	} else {
-		log.Printf("executing job '%s'", jobName)
+		log.Infof("executing job '%s'", jobName)
 	}
 
 	for _, run := range job.Run {
@@ -80,7 +80,7 @@ func (r *Runner) executeJob(jobName string, job *gomakefile.Job) error {
 		cmd := exec.Command("sh", "-c", os.ExpandEnv(run))
 
 		if r.config.Dry {
-			log.Println(cmd.String())
+			log.WithField("cmd", cmd.String()).Info("dry run")
 			continue
 		}
 
@@ -97,7 +97,7 @@ func (r *Runner) executeJob(jobName string, job *gomakefile.Job) error {
 		if outputStr != "" {
 			lines := strings.Split(outputStr, "\n")
 			for _, line := range lines {
-				log.Printf("output for job '%s': %s", jobName, line)
+				log.WithField("output", line).Infof("output for job '%s'", jobName)
 			}
 		}
 	}
@@ -110,7 +110,7 @@ func checkSkip(jobName string, job *gomakefile.Job) bool {
 		if _, err := os.Stat(job.SkipIf); !os.IsNotExist(err) {
 			// Skip the current job as the checked file / directory already exist
 			if !job.Silent {
-				log.Printf("skipping job '%s'\n", jobName)
+				log.Infof("skipping job '%s'", jobName)
 			}
 			return true
 		}
@@ -120,7 +120,7 @@ func checkSkip(jobName string, job *gomakefile.Job) bool {
 		if _, err := os.Stat(job.SkipIfNot); os.IsNotExist(err) {
 			// Skip the current job as the checked file / directory doesn't exist
 			if !job.Silent {
-				log.Printf("skipping job '%s'\n", jobName)
+				log.Infof("skipping job '%s'", jobName)
 			}
 			return true
 		}
@@ -139,7 +139,7 @@ OUTER:
 
 		for _, dep := range *deps {
 			if depName == dep {
-				log.Printf("dropped circular reference for job '%s'", dep)
+				log.Warnf("dropped circular reference for job '%s'", dep)
 
 				continue OUTER
 			}

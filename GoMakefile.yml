@@ -10,7 +10,6 @@ jobs:
       - build
     run:
       - sudo mv gomake /usr/local/bin
-    skipIf: /usr/local/bin/gomake
 
   uninstall:
     deps:

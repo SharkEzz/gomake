@@ -13,7 +13,9 @@ func FindAndReadGoMakefile() ([]byte, error) {
 	}
 
 	for _, entry := range entries {
-		if !entry.IsDir() && strings.ToLower(entry.Name()) == "gomakefile" {
+		entryName := strings.ToLower(entry.Name())
+
+		if !entry.IsDir() && (entryName == "gomakefile.yml" || entryName == "gomakefile.yaml") {
 			return os.ReadFile(entry.Name())
 		}
 	}

@@ -2,11 +2,11 @@ package main
 
 import (
 	"flag"
-	"log"
 
 	"github.com/SharkEzz/gomake/pkg/gomakefile/read"
 	"github.com/SharkEzz/gomake/pkg/parser"
 	"github.com/SharkEzz/gomake/pkg/runner"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
